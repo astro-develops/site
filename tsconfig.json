@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "components/home/hero.js", "components/home/discover.js", "components/home/event.js", "components/home/explore.js", "components/home/community.js"  ],
   "exclude": [
     "node_modules"
   ]
