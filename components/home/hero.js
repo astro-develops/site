@@ -16,8 +16,27 @@ import Comma from '../comma'
 import Konami from 'react-konami-code'
 import JSConfetti from 'js-confetti'
 import Secret from '../secret'
+import Icon from '../icon'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+
 
 export default function Hero({ slackData }) {
+const pathRef = useRef<SVGPathElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll relative to the container
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'], // When container enters and leaves viewport
+  });
+
+  // Smooth the scroll progress
+  const pathProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    mass: 1,
+  });
+
   let [reveal, setReveal] = useState(false)
   const [hover, setHover] = useState(true)
 
@@ -169,18 +188,6 @@ export default function Hero({ slackData }) {
             >
               Join Slack
             </Button>
-            <Button
-              variant="ctaLg"
-              as="a"
-              href="https://shipwrecked.hack.club/3"
-              mt={3}
-              sx={{
-                transformOrigin: 'left',
-                backgroundImage: t => t.util.gx('green', 'blue')
-              }}
-            >
-              Sign Up: Private Island Hackathon
-            </Button>
           </Heading>
         </Box>
         <Box
@@ -214,6 +221,87 @@ export default function Hero({ slackData }) {
           </Badge>
         </Box>
       </Box>
+        <Box
+          sx={{
+            py: ['25px', 3],
+            px: 4,
+            background: [
+              'rgba(200, 200, 200, 0.3)',
+              'linear-gradient(rgba(255,255,255,0.4), rgba(200,200,200,.3))'
+            ],
+            backdropFilter: 'blur(20px)',
+            borderRadius: 20,
+            boxShadow:
+              '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            mt: [20, -50],
+            mx: [10,60],
+            flexDirection: ['column', 'row']
+          }}
+        >
+          <span style={{ fontSize: 20 }}>
+            <strong style={{ fontSize: 23 }}>HCB is now open source! </strong>
+            <br />
+            Join us in building the infrastructure powering student-led
+            organizations
+          </span>
+
+          <Box
+            sx={{
+              gap: 2,
+              display: 'flex',
+              width: ['100%', 'auto'],
+              alignItems: ['stretch', 'center'],
+              flexShrink: 0,
+              ml: [undefined, 'auto'],
+              flexDirection: ['column-reverse', 'row']
+            }}
+          >
+            <Button
+              as="a"
+              sx={{
+                flexShrink: 0,
+                gap: 1,
+                px: "5rem",
+                textAlign: 'center'
+              }}
+              href="https://shipwrecked.hack.club/3"
+              target="_blank"
+            >
+              Sign up
+              <Icon glyph="view-forward" />
+            </Button>
+          </Box>
+        </Box>
+        <div ref={containerRef} className="relative h-[200vh] w-full">
+      {/* Path layer (fixed or absolute depending on design) */}
+      <svg
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+        viewBox="0 0 1000 1000"
+        preserveAspectRatio="none"
+      >
+        <motion.path
+          ref={pathRef}
+          d="M 100 100 C 300 300, 500 100, 900 900" // Your curve
+          stroke="black"
+          strokeWidth="3"
+          fill="none"
+          initial={{ pathLength: 0 }}
+          style={{
+            pathLength: pathProgress,
+          }}
+        />
+      </svg>
+
+      {/* Content that scrolls over the path */}
+      <div className="relative z-10">
+        <div className="h-screen bg-white flex items-center justify-center">Section 1</div>
+        <div className="h-screen bg-gray-200 flex items-center justify-center">Section 2</div>
+        <div className="h-screen bg-white flex items-center justify-center">Section 3</div>
+      </div>
+    </div>
     </>
   )
 }

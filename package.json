@@ -57,6 +57,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
     "million": "^2.6.4",
+    "motion": "^12.12.1",
     "next": "^12.3.4",
     "next-transpile-modules": "^10.0.1",
     "nextjs-current-url": "^1.0.3",

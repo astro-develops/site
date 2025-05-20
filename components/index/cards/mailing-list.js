@@ -58,42 +58,6 @@ const MailingList = () => {
     setSubmitting(false)
   }
 
-  // This lovely concoction of JavaScript basically fetches the last two newsletters from the GitHub repo,
-  // converts them to HTML, gets rid of those HTML tags, the sets all of that as the state of the component.
-  // Then, It makes a second fetch request to get the filename, so that can be used to determine the link.
-  // After that, it removes the file extension, so we can use that as the date.
-  // Finally, it sets the state of data to the final HTML and the names of the files, so we can map that later on!
-
-  useEffect(() => {
-    Promise.all([
-      fetch(
-        'https://api.github.com/repos/hackclub/leaders-newsletter/contents/updates'
-      )
-        .then(response => response.json())
-        .then(data => data.sort((a, b) => b.name.localeCompare(a.name))) // Makes sure we only get the latest two newsletters
-        .then(data => data.slice(0, 2))
-        .then(data => Promise.all(data.map(item => fetch(item.download_url)))) // Makes a separate fetch request for the content of each newsletter
-        .then(responses =>
-          Promise.all(responses.map(response => response.text()))
-        )
-        .then(markdown =>
-          Promise.all(markdown.map(markdown => markdownToHtml(markdown)))
-        )
-        .then(html =>
-          html.map(html =>
-            html.replace(/<[^>]*>/g, '').replace(/The Hackening/g, '')
-          )
-        ), // Chucks out all html tags + 'The Hackening'
-
-      fetch(
-        'https://api.github.com/repos/hackclub/leaders-newsletter/contents/updates'
-      )
-        .then(response => response.json())
-        .then(data => data.sort((a, b) => b.name.localeCompare(a.name)))
-        .then(data => data.map(item => item.name.split('.')[0])) // Grabs the name and gets rid of the file extension
-    ]).then(([finalHtml, names]) => setData({ finalHtml, names }))
-  }, [])
-
   return (
     <Box sx={{ position: 'relative', py: 6, background: 'darker' }}>
       <Card
@@ -107,19 +71,6 @@ const MailingList = () => {
           backdropFilter: 'blur(8px)'
         }}
       >
-        <Flex
-          sx={{ flexDirection: ['column', 'column', 'row'], gridGap: [0, 5] }}
-        >
-          <Flex
-            sx={{
-              placeItems: 'center',
-              justifyContent: 'center',
-              alignItems: ['left', 'left', 'center'],
-              flexDirection: 'column',
-              gap: '10px',
-              width: ['100%', '100%', '75%']
-            }}
-          >
             <Box>
               <Text
                 variant="title"
@@ -130,26 +81,6 @@ const MailingList = () => {
                 }}
               >
                 Join the newsletter
-              </Text>
-              <Text
-                sx={{
-                  color: 'darkless',
-                  mt: 2,
-                  fontSize: 3,
-                  textAlign: 'left'
-                }}
-                as="p"
-              >
-                We&apos;ll send you an email no more than once a month, when we
-                work on something cool for you. Check out our{' '}
-                <Link
-                  href="https://workshops.hackclub.com/leader-newsletters/"
-                  target="_blank"
-                  rel="noopener norefferer"
-                >
-                  previous issues
-                </Link>
-                .
               </Text>
             </Box>
             <Grid
@@ -208,40 +139,15 @@ const MailingList = () => {
                 )}
               </Button>
             </Grid>
-          </Flex>
-          <Box
-            sx={{
-              display: 'grid',
-              gridGap: 4,
-              mt: [4, 0],
-              width: '100%'
-            }}
-          >
-            {data.finalHtml
-              .map((html, index) => (
-                <MailCard
-                  issue={index + 1}
-                  body={html}
-                  date={format(
-                    parse('', '', new Date(data.names[index])),
-                    'MMMM d, yyyy'
-                  )}
-                  link={data.names[index]}
-                  key={index}
-                />
-              ))
-              .reverse()}
-          </Box>
-        </Flex>
       </Card>
-      <BGImg
+      {/* <BGImg
         width={2544}
         height={2048}
         gradient="linear-gradient(rgba(0,0,0,0.125), rgba(0,0,0,0.25))"
         src={background}
         placeholder="blur"
         alt="Globe with hundreds of Hack Clubs"
-      />
+      /> */}
     </Box>
   )
 }
